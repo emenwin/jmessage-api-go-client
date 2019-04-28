@@ -79,6 +79,9 @@ func (jclient *JMessageClient) SentSystemTxtMsg(fromId string,
 	jpMessage.MsgBody = txtMsg
 
 	res, err := jclient.request(JMESSAGE_IM_URL+MESSAGES_URL, "POST", jpMessage)
+	if nil != err {
+		return err
+	}
 	defer res.Body.Close()
 
 	ibytes, err := ioutil.ReadAll(res.Body)
