@@ -226,6 +226,83 @@ func (jclient *JMessageClient) UpdatePasswd(username string, passwd string) erro
 
 	return nil
 }
+func (jclient *JMessageClient) UpdateProfile(username string, nickname, avatar, birthday string,
+	signature, gender, region, address string,
+	extras string) error {
+
+	req := goreq.Request{
+		Method:            "PUT",
+		Uri:               JMESSAGE_IM_URL + REGIST_USER_URL + username,
+		Accept:            "application/json",
+		ContentType:       "application/json",
+		UserAgent:         "JMessage-API-GO-Client",
+		BasicAuthUsername: jclient.appKey,
+		BasicAuthPassword: jclient.masterSecret,
+		Timeout:           30 * time.Second, //30s
+	}
+	req.ShowDebug = ShowDebug
+
+	params := map[string]string{}
+	if nickname != "" {
+		params["nickname"] = nickname
+	}
+	if avatar != "" {
+		params["avatar"] = avatar
+	}
+	if birthday != "" {
+		params["birthday"] = birthday
+	}
+
+	if signature != "" {
+		params["signature"] = signature
+	}
+	if gender != "" {
+		params["gender"] = gender
+	}
+	if region != "" {
+		params["region"] = region
+	}
+	if address != "" {
+		params["address"] = address
+	}
+
+	if extras != "" {
+		params["extras"] = extras
+	}
+
+	req.Body = params
+	res, err := req.Do()
+
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+
+	ibytes, err := ioutil.ReadAll(res.Body)
+	if nil != err {
+		return err
+	}
+	if ShowDebug {
+		fmt.Println("respone:", string(ibytes))
+	}
+
+	if string(ibytes) == "" {
+		return nil
+	}
+	jmResult := JMResponse{}
+
+	err = json.Unmarshal(ibytes, &jmResult)
+	if nil != err {
+		return err
+	}
+
+	if nil != jmResult.Error {
+		return jmResult.Error
+	}
+
+	return nil
+}
 
 func (jclient *JMessageClient) DeleteUser(username string) error {
 
