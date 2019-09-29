@@ -51,6 +51,9 @@ func (jclient *JMessageClient) request(uri string, method string, body interface
 		return nil, err
 	}
 
+	if req.ShowDebug {
+		fmt.Printf("request:%s, %s\n", uri, method)
+	}
 	res, err := req.Do()
 
 	if err != nil {

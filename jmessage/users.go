@@ -349,3 +349,101 @@ func (jclient *JMessageClient) DeleteUser(username string) error {
 
 	return nil
 }
+
+//BlackUsers 添加黑名单
+func (jclient *JMessageClient) BlackUsers(fromUsername string, blackUserNames []string) error {
+
+	if len(blackUserNames) == 0 {
+		return errors.New("empty blackUserNames")
+	}
+	res, err := jclient.request(JMESSAGE_IM_URL+REGIST_USER_URL+fromUsername+"/blacklist", "PUT", blackUserNames)
+	if nil != err {
+		return err
+	}
+	defer res.Body.Close()
+
+	ibytes, err := ioutil.ReadAll(res.Body)
+	if nil != err {
+		return err
+	}
+
+	if ShowDebug {
+		fmt.Println("respone:", string(ibytes))
+	}
+
+	return nil
+}
+
+//DeleteBlackUsers 删除黑名单
+func (jclient *JMessageClient) DeleteBlackUsers(fromUsername string, blackUserNames []string) error {
+
+	if len(blackUserNames) == 0 {
+		return errors.New("empty blackUserNames")
+	}
+	res, err := jclient.request(JMESSAGE_IM_URL+REGIST_USER_URL+fromUsername+"/blacklist", "DELETE", blackUserNames)
+	if nil != err {
+		return err
+	}
+	defer res.Body.Close()
+
+	ibytes, err := ioutil.ReadAll(res.Body)
+	if nil != err {
+		return err
+	}
+
+	if ShowDebug {
+		fmt.Println("respone:", string(ibytes))
+	}
+
+	return nil
+}
+
+//GetBlackUsers 获取黑名单
+func (jclient *JMessageClient) GetBlackUsers(fromUsername string) ([]string, error) {
+
+	users := []string{}
+	res, err := jclient.request(JMESSAGE_IM_URL+REGIST_USER_URL+fromUsername+"/blacklist", "Get", nil)
+	if nil != err {
+		return users, err
+	}
+	defer res.Body.Close()
+
+	ibytes, err := ioutil.ReadAll(res.Body)
+	if nil != err {
+		return users, err
+	}
+
+	if ShowDebug {
+		fmt.Println("respone:", string(ibytes))
+	}
+
+	err = json.Unmarshal(ibytes, &users)
+	return users, err
+}
+
+//ForbiddenUser 禁用/解除禁用
+func (jclient *JMessageClient) ForbiddenUser(username string, forbidden bool) error {
+
+	url := JMESSAGE_IM_URL + REGIST_USER_URL + username + "/forbidden?disable="
+	if forbidden {
+		url += "true"
+	} else {
+		url += "false"
+	}
+	res, err := jclient.request(url, "PUT", nil)
+	if nil != err {
+		return err
+	}
+	defer res.Body.Close()
+
+	ibytes, err := ioutil.ReadAll(res.Body)
+	if nil != err {
+		return err
+	}
+
+	if ShowDebug {
+		fmt.Println("respone:", string(ibytes))
+	}
+
+	return nil
+}
