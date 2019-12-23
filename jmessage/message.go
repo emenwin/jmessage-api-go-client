@@ -12,8 +12,8 @@ type JPMessage struct {
 	FromType   string `json:"from_type"`   //发送消息者身份 当前只限admin用户，必须先注册admin用户 （必填）
 	FromId     string `json:"from_id"`     //发送者的username （必填）
 
-	MsgType string        `json:"msg_type"` //发消息类型 text - 文本，image - 图片, custom - 自定义消息（msg_body为json对象即可，服务端不做校验）voice - 语音 （必填）
-	MsgBody JPMessageBody `json:"msg_body"`
+	MsgType string                 `json:"msg_type"` //发消息类型 text - 文本，image - 图片, custom - 自定义消息（msg_body为json对象即可，服务端不做校验）voice - 语音 （必填）
+	MsgBody map[string]interface{} `json:"msg_body"`
 
 	FromName       string          `json:"from_name,omitempty"`       //发送者展示名（选填）
 	TargetName     string          `json:"target_name,omitempty"`     //接受者展示名（选填）
@@ -36,6 +36,7 @@ type JPNotification struct {
 // JMsg RCMsg接口
 type JPMessageBody interface {
 	toString() (string, error)
+	toMap() (map[string]interface{}, error)
 }
 
 // JPTxtMsg 消息
@@ -64,6 +65,17 @@ type JPVoiceMsg struct {
 	Fsize      int    `json:"fsize"`          //（必填）
 }
 
+func objectToMap(msg interface{}) (map[string]interface{}, error) {
+	bytes, err := json.Marshal(msg)
+	if err != nil {
+		return nil, err
+	}
+
+	result := map[string]interface{}{}
+	err = json.Unmarshal(bytes, &result)
+	return result, err
+}
+
 // toString TXTMsg
 func (msg JPTxtMsg) toString() (string, error) {
 	bytes, err := json.Marshal(msg)
@@ -71,6 +83,9 @@ func (msg JPTxtMsg) toString() (string, error) {
 		return "", err
 	}
 	return string(bytes), nil
+}
+func (msg JPTxtMsg) toMap() (map[string]interface{}, error) {
+	return objectToMap(&msg)
 }
 
 // toString ImgMsg
@@ -81,6 +96,9 @@ func (msg JPIMGMsg) toString() (string, error) {
 	}
 	return string(bytes), nil
 }
+func (msg JPIMGMsg) toMap() (map[string]interface{}, error) {
+	return objectToMap(&msg)
+}
 
 // toString InfoNtf
 func (msg JPVoiceMsg) toString() (string, error) {
@@ -89,6 +107,9 @@ func (msg JPVoiceMsg) toString() (string, error) {
 		return "", err
 	}
 	return string(bytes), nil
+}
+func (msg JPVoiceMsg) toMap() (map[string]interface{}, error) {
+	return objectToMap(&msg)
 }
 
 //JPMessageList 消息列表

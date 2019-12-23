@@ -79,7 +79,7 @@ func (jclient *JMessageClient) SentSystemTxtMsg(fromId string,
 	txtMsg.Text = message
 	txtMsg.Extra = ext
 
-	jpMessage.MsgBody = txtMsg
+	jpMessage.MsgBody, _ = txtMsg.toMap()
 
 	res, err := jclient.request(JMESSAGE_IM_URL+MESSAGES_URL, "POST", jpMessage)
 	if nil != err {
