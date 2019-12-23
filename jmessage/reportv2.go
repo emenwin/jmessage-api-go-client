@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/url"
 )
 
 //GetMessages 获取消息
@@ -14,21 +15,26 @@ import (
 //查询的消息按发送时间升序排序
 func (jclient *JMessageClient) GetMessages(count int, beginTime, endTime string, cursor string) (*JPMessageList, error) {
 
-	body := map[string]interface{}{}
-	if count > 0 {
-		body["count"] = count
-	}
-	if beginTime != "" {
-		body["begin_time"] = beginTime
-	}
-	if endTime != "" {
-		body["end_time"] = endTime
+	v := url.Values{}
+	if cursor != "" {
+		v.Add("cursor", cursor)
+
+	} else {
+
+		v.Add("count", fmt.Sprintf("%d", count))
+		v.Add("begin_time", beginTime)
+		v.Add("end_time", endTime)
+
 	}
 
-	if cursor != "" {
-		body["cursor"] = cursor
-	}
-	res, err := jclient.request(JMESSAGE_REPORT_V2_URL+REPORT_MESSAGE, "GET", body)
+	body := v.Encode()
+	// url decode
+	//m, _ := url.ParseQuery(body)
+
+	url := JMESSAGE_REPORT_V2_URL + REPORT_MESSAGE
+	url = url + "?" + body
+
+	res, err := jclient.request(url, "GET", nil)
 	defer res.Body.Close()
 
 	ibytes, err := ioutil.ReadAll(res.Body)

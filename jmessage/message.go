@@ -6,7 +6,7 @@ import (
 
 // JPMessage 消息
 type JPMessage struct {
-	Version    string `json:"version"`     //版本号 目前是1 （必填）
+	Version    int    `json:"version"`     //版本号 目前是1 （必填）
 	TargetType string `json:"target_type"` //发送目标类型 single - 个人，group - 群组 chatroom - 聊天室（必填）
 	TargetId   string `json:"target_id"`   //目标id single填username group 填Group id chatroom 填chatroomid（必填）
 	FromType   string `json:"from_type"`   //发送消息者身份 当前只限admin用户，必须先注册admin用户 （必填）
@@ -94,7 +94,7 @@ func (msg JPVoiceMsg) toString() (string, error) {
 //JPMessageList 消息列表
 type JPMessageList struct {
 	Total    int64       `json:"total"`
-	Cursor   int64       `json:"cursor"`
+	Cursor   string      `json:"cursor"`
 	Count    int64       `json:"count"`
 	Messages []JPMessage `json:"messages,omitempty"`
 }

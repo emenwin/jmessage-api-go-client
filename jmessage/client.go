@@ -69,7 +69,7 @@ func (jclient *JMessageClient) SentSystemTxtMsg(fromId string,
 	targetId string,
 	message string, ext map[string]interface{}) error {
 
-	jpMessage := JPMessage{Version: "1", FromType: "admin", MsgType: "text"}
+	jpMessage := JPMessage{Version: 1, FromType: "admin", MsgType: "text"}
 
 	jpMessage.FromId = fromId
 	jpMessage.TargetType = targetType
