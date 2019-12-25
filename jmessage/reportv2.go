@@ -42,7 +42,7 @@ func (jclient *JMessageClient) GetMessages(count int, beginTime, endTime string,
 		return nil, err
 	}
 
-	if ShowDebug {
+	if jclient.showDebug {
 		fmt.Println("respone:", string(ibytes))
 	}
 
@@ -78,7 +78,7 @@ func (jclient *JMessageClient) GetUserMessages(userName string, count int, begin
 		return nil, err
 	}
 
-	if ShowDebug {
+	if jclient.showDebug {
 		fmt.Println("respone:", string(ibytes))
 	}
 

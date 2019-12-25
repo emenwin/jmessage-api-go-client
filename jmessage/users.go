@@ -38,8 +38,6 @@ func (e *JMError) Error() string {
 	return fmt.Sprintf("%d - %s", e.Code, e.Message)
 }
 
-var ShowDebug = true
-
 //RegisterUsers 批量注册用户
 func (jclient *JMessageClient) RegisterUsers(users []*JMUser) ([]*JMUser, error) {
 
@@ -63,7 +61,7 @@ func (jclient *JMessageClient) RegisterUsers(users []*JMUser) ([]*JMUser, error)
 		Timeout:           30 * time.Second, //30s
 	}
 	req.Body = users
-	req.ShowDebug = ShowDebug
+	req.ShowDebug = jclient.showDebug
 
 	res, err := req.Do()
 
@@ -78,7 +76,7 @@ func (jclient *JMessageClient) RegisterUsers(users []*JMUser) ([]*JMUser, error)
 		return rusers, err
 	}
 
-	if ShowDebug {
+	if jclient.showDebug {
 		fmt.Println("respone:", string(ibytes))
 	}
 
@@ -145,7 +143,7 @@ func (jclient *JMessageClient) RegisterAdmin(username string,
 		Timeout:           30 * time.Second, //30s
 	}
 	req.Body = user
-	req.ShowDebug = ShowDebug
+	req.ShowDebug = jclient.showDebug
 
 	res, err := req.Do()
 
@@ -159,7 +157,7 @@ func (jclient *JMessageClient) RegisterAdmin(username string,
 	if nil != err {
 		return nil, nil, err
 	}
-	if ShowDebug {
+	if jclient.showDebug {
 		fmt.Println("respone:", string(ibytes))
 	}
 
@@ -192,7 +190,7 @@ func (jclient *JMessageClient) UpdatePasswd(username string, passwd string) erro
 		BasicAuthPassword: jclient.masterSecret,
 		Timeout:           30 * time.Second, //30s
 	}
-	req.ShowDebug = ShowDebug
+	req.ShowDebug = jclient.showDebug
 	req.Body = map[string]string{"new_password": passwd}
 	res, err := req.Do()
 
@@ -206,7 +204,7 @@ func (jclient *JMessageClient) UpdatePasswd(username string, passwd string) erro
 	if nil != err {
 		return err
 	}
-	if ShowDebug {
+	if jclient.showDebug {
 		fmt.Println("respone:", string(ibytes))
 	}
 
@@ -240,7 +238,7 @@ func (jclient *JMessageClient) UpdateProfile(username string, nickname, avatar, 
 		BasicAuthPassword: jclient.masterSecret,
 		Timeout:           30 * time.Second, //30s
 	}
-	req.ShowDebug = ShowDebug
+	req.ShowDebug = jclient.showDebug
 
 	params := map[string]string{}
 	if nickname != "" {
@@ -283,7 +281,7 @@ func (jclient *JMessageClient) UpdateProfile(username string, nickname, avatar, 
 	if nil != err {
 		return err
 	}
-	if ShowDebug {
+	if jclient.showDebug {
 		fmt.Println("respone:", string(ibytes))
 	}
 
@@ -316,7 +314,7 @@ func (jclient *JMessageClient) DeleteUser(username string) error {
 		BasicAuthPassword: jclient.masterSecret,
 		Timeout:           30 * time.Second, //30s
 	}
-	req.ShowDebug = ShowDebug
+	req.ShowDebug = jclient.showDebug
 	res, err := req.Do()
 
 	if err != nil {
@@ -329,7 +327,7 @@ func (jclient *JMessageClient) DeleteUser(username string) error {
 	if nil != err {
 		return err
 	}
-	if ShowDebug {
+	if jclient.showDebug {
 		fmt.Println("respone:", string(ibytes))
 	}
 
@@ -367,7 +365,7 @@ func (jclient *JMessageClient) BlackUsers(fromUsername string, blackUserNames []
 		return err
 	}
 
-	if ShowDebug {
+	if jclient.showDebug {
 		fmt.Println("respone:", string(ibytes))
 	}
 
@@ -391,7 +389,7 @@ func (jclient *JMessageClient) DeleteBlackUsers(fromUsername string, blackUserNa
 		return err
 	}
 
-	if ShowDebug {
+	if jclient.showDebug {
 		fmt.Println("respone:", string(ibytes))
 	}
 
@@ -413,7 +411,7 @@ func (jclient *JMessageClient) GetBlackUsers(fromUsername string) ([]string, err
 		return users, err
 	}
 
-	if ShowDebug {
+	if jclient.showDebug {
 		fmt.Println("respone:", string(ibytes))
 	}
 
@@ -441,7 +439,7 @@ func (jclient *JMessageClient) ForbiddenUser(username string, forbidden bool) er
 		return err
 	}
 
-	if ShowDebug {
+	if jclient.showDebug {
 		fmt.Println("respone:", string(ibytes))
 	}
 

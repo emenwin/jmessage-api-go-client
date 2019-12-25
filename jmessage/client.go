@@ -17,11 +17,13 @@ const (
 type JMessageClient struct {
 	appKey       string
 	masterSecret string
+	showDebug    bool
 }
 
 //NewJMessageClient 创建client
-func NewJMessageClient(appkey, master_secret string) *JMessageClient {
-	return &JMessageClient{appkey, master_secret}
+func NewJMessageClient(appkey, master_secret string, debug bool) *JMessageClient {
+
+	return &JMessageClient{appkey, master_secret, debug}
 }
 
 func (jclient *JMessageClient) buildReq(uri string, method string, body interface{}) (*goreq.Request, error) {
@@ -40,7 +42,7 @@ func (jclient *JMessageClient) buildReq(uri string, method string, body interfac
 		Timeout:           30 * time.Second, //30s
 	}
 	req.Body = body
-	req.ShowDebug = ShowDebug
+	req.ShowDebug = jclient.showDebug
 
 	return &req, nil
 }
@@ -92,7 +94,7 @@ func (jclient *JMessageClient) SentSystemTxtMsg(fromId string,
 		return err
 	}
 
-	if ShowDebug {
+	if jclient.showDebug {
 		fmt.Println("respone:", string(ibytes))
 	}
 
