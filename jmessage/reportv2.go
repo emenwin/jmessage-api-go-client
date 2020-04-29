@@ -27,6 +27,8 @@ func (jclient *JMessageClient) GetMessages(count int, beginTime, endTime string,
 
 	}
 
+	var jmessageList JPMessageList
+
 	body := v.Encode()
 	// url decode
 	//m, _ := url.ParseQuery(body)
@@ -35,6 +37,9 @@ func (jclient *JMessageClient) GetMessages(count int, beginTime, endTime string,
 	url = url + "?" + body
 
 	res, err := jclient.request(url, "GET", nil)
+	if nil != err {
+		return &jmessageList, err
+	}
 	defer res.Body.Close()
 
 	ibytes, err := ioutil.ReadAll(res.Body)
@@ -46,7 +51,6 @@ func (jclient *JMessageClient) GetMessages(count int, beginTime, endTime string,
 		fmt.Println("respone:", string(ibytes))
 	}
 
-	var jmessageList JPMessageList
 	err = json.Unmarshal(ibytes, &jmessageList)
 	if nil != err {
 		return nil, err
@@ -54,6 +58,7 @@ func (jclient *JMessageClient) GetMessages(count int, beginTime, endTime string,
 	return &jmessageList, nil
 }
 
+//GetUserMessages 用户消息
 func (jclient *JMessageClient) GetUserMessages(userName string, count int, beginTime, endTime string, cursor string) (*JPMessageList, error) {
 
 	body := map[string]interface{}{}
@@ -70,7 +75,13 @@ func (jclient *JMessageClient) GetUserMessages(userName string, count int, begin
 	if cursor != "" {
 		body["cursor"] = cursor
 	}
+
+	var jmessageList JPMessageList
+
 	res, err := jclient.request(JMESSAGE_REPORT_V2_URL+"/"+userName+REPORT_MESSAGE, "GET", body)
+	if nil != err {
+		return &jmessageList, err
+	}
 	defer res.Body.Close()
 
 	ibytes, err := ioutil.ReadAll(res.Body)
@@ -82,7 +93,6 @@ func (jclient *JMessageClient) GetUserMessages(userName string, count int, begin
 		fmt.Println("respone:", string(ibytes))
 	}
 
-	var jmessageList JPMessageList
 	err = json.Unmarshal(ibytes, &jmessageList)
 	if nil != err {
 		return nil, err
